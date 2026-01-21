@@ -13,7 +13,6 @@ import cors from "cors";
 dotenv.config();
 connectDb();
 
-
 const app = express();
 
 const port = process.env.PORT || 8000
@@ -21,10 +20,6 @@ const port = process.env.PORT || 8000
 //middleware
 app.use(express.json());
 app.use(cookieParser());
-
-
-
-
 
 
 app.use(

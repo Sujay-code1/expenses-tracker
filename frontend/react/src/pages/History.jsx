@@ -29,25 +29,26 @@ const History = () => {
   });
 
   return (
-    <div className="p-7 space-y-6">
-      {/* Header Section matching your other pages */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Transaction History</h2>
+    <div className="space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Transaction History</h2>
+          <p className="text-gray-500 text-sm mt-1">View all your income and expense transactions</p>
+        </div>
         
-        <div className="flex items-center gap-3">
-          {/* Search Input styled like your other forms */}
-          <div className="relative">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+          {/* Search Input */}
+          <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Search..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none w-64 bg-white"
+              placeholder="Search transactions..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-          </div>
-
-          {/* Type Filter */}
+          </div>}
           <select
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white text-gray-600"
             value={filterType}
