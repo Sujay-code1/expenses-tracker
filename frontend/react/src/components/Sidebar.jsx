@@ -25,44 +25,52 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
 
   return (
     <aside
-  className={`h-screen p-4 flex flex-col bg-white shadow-[4px_0_20px_rgba(0,0,0,0.08)] transition-all duration-300
-  ${isOpen ? "w-64" : "w-20"}`}
->
+      className={`h-screen bg-white shadow-lg border-r border-gray-200 transition-all duration-300 flex flex-col flex-shrink-0
+      ${
+        isOpen ? "w-64" : "w-20"
+      }`}
+    >
       {/* Toggle */}
       <button
         onClick={toggleSidebar}
-        className="self-end mb-6 p-1 bg-indigo-600 text-white rounded-full shadow-md hover:scale-110 transition"
+        className="hidden md:flex self-end mb-6 p-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition m-4"
       >
-        {isOpen ? <IoIosArrowBack size={22} /> : <IoIosArrowForward size={22} />}
+        {isOpen ? <IoIosArrowBack size={20} /> : <IoIosArrowForward size={20} />}
       </button>
 
       {/* Menu */}
-      <nav className="flex flex-col gap-2 flex-1">
+      <nav className="flex flex-col gap-2 flex-1 px-4">
         {menu.map((item, idx) => (
           <button
             key={idx}
-            onClick={() => navigate(item.path)}
-            className={`flex items-center gap-4 p-3 rounded-lg text-[16px] font-medium transition-all w-full
-              hover:bg-indigo-600 hover:text-white
-              ${pathname === item.path ? "bg-indigo-600 text-white shadow-md" : ""}`}
+            onClick={() => {
+              navigate(item.path);
+              window.innerWidth < 768 && toggleSidebar();
+            }}
+            className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full whitespace-nowrap
+              ${pathname === item.path 
+                ? "bg-indigo-600 text-white shadow-md" 
+                : "text-gray-700 hover:bg-indigo-50"}`}
           >
-            <span className="text-[22px]">{item.icon}</span>
-            {isOpen && <span>{item.label}</span>}
+            <span className="text-xl flex-shrink-0">{item.icon}</span>
+            {isOpen && <span className="text-sm">{item.label}</span>}
           </button>
         ))}
       </nav>
 
       {/* Logout */}
-      <div className="pt-4 border-t">
+      <div className="p-4 border-t border-gray-200">
         <button
-          onClick={()=>navigate("/")}
-          className="flex items-center gap-4 p-3 rounded-lg text-[16px] font-medium transition-all w-full
-            hover:bg-red-600 hover:text-white text-red-600"
+          onClick={()=>{
+            navigate("/");
+            window.innerWidth < 768 && toggleSidebar();
+          }}
+          className="flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full text-red-600 hover:bg-red-50 whitespace-nowrap"
         >
-          <span className="text-[22px]">
+          <span className="text-xl flex-shrink-0">
             <MdLogout />
           </span>
-          {isOpen && <span>Logout</span>}
+          {isOpen && <span className="text-sm">Logout</span>}
         </button>
       </div>
     </aside>

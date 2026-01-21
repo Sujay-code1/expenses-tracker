@@ -6,11 +6,15 @@ import { setExpensesData, setLoading, setError, removeExpense } from "../store/e
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseTable from "../components/ExpenseTable";
 import ExpenseCard from "../components/ExpenseCard";
+import ExpenseFilter from "../components/ExpenseFilter";
 
 const Expense = () => {
   const dispatch = useDispatch();
   const { list, isLoading, error } = useSelector(state => state.expense);
+  const [filter, setFilter] = useState("all");
   
+  //pagination
+  const itemsPerPage = 8;
   // Logic to ensure Card matches Table exactly
   const calculatedTotal = list && list.length > 0 
     ? list.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0) 
@@ -20,6 +24,8 @@ const Expense = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
 
   const loadData = async () => {
     dispatch(setLoading(true));
@@ -59,18 +65,34 @@ const Expense = () => {
 
   useEffect(() => {
     loadData();
+    setCurrentPage(1);
   }, [month, dispatch]);
 
+  // Reset pagination when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter]);
+
+  const filtered = list.filter(expense=>{
+    if(filter === "all") return true;
+    if(filter === "HighExpense") return Number(expense.amount) >= 10000;
+    if(filter === "LowExpense") return Number(expense.amount) < 10000;
+    return true;
+  })
+
   return (
-    <div className="space-y-6 p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-bold">Expense Tracker</h2>
-        <div className="flex flex-wrap gap-3">
+    <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+        <div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Expense Tracker</h2>
+          <p className="text-gray-500 text-sm mt-1">Track and manage your daily expenses</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <input 
             type="month" 
             value={month} 
             onChange={(e) => setMonth(e.target.value)}
-            className="border rounded-lg px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
           />
           <ExpenseForm />
         </div>
@@ -84,6 +106,13 @@ const Expense = () => {
 
       {/* Card shows the calculated sum of the current table rows */}
       <ExpenseCard total={calculatedTotal} />
+      
+      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+        <div className="flex flex-col gap-2">
+          <h3 className="text-sm font-semibold text-gray-700">Filter by Amount</h3>
+          <ExpenseFilter filter={filter} setFilter={setFilter}/>
+        </div>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
@@ -91,7 +120,13 @@ const Expense = () => {
           <p className="ml-3 text-gray-600">Fetching data...</p>
         </div>
       ) : (
-        <ExpenseTable expenses={list} onDelete={handleDeleteExpense} />
+        <ExpenseTable 
+          expenses={filtered} 
+          onDelete={handleDeleteExpense}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          itemsPerPage={itemsPerPage}
+        />
       )}
     </div>
   );

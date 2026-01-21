@@ -41,12 +41,13 @@ const Budget = () => {
   }, [dispatch]);
 
   return (
-    <div className="space-y-6 p-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-2xl font-bold">Budget Planning</h2>
-        <div className="flex flex-wrap gap-3">
-          <BudgetForm />
+    <div className="space-y-6">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Budget Planning</h2>
+          <p className="text-gray-500 text-sm mt-1">Set and monitor your budget limits</p>
         </div>
+        <BudgetForm />
       </div>
 
       {error && (

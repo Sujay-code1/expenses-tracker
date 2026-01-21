@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setError, setUser } from "../store/userSlice";
 import { useNavigate, Link } from "react-router-dom";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import axios from "axios";
 
 const Login = () => {
@@ -10,6 +11,7 @@ const Login = () => {
   const { isLoading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const[showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,15 +58,26 @@ const Login = () => {
             required
           />
 
+          <div className="relative">
           <input
-            type="password"
+            type={showPassword ? "text" : "password"}
             name="password"
             placeholder="Password"
+
+           
             value={formData.password}
             onChange={handleChange}
             className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-            required
+            required 
+
           />
+          <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 cursor-pointer"
+          type="button"
+          onClick={()=>setShowPassword(!showPassword)}
+          >
+            {showPassword ?  <IoMdEye size={20} /> : <IoMdEyeOff size={20} />}
+          </button>
+          </div>
 
           <button
             type="submit"

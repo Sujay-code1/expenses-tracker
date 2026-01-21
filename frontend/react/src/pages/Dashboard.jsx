@@ -15,14 +15,14 @@ const Dashboard = () => {
   const balance = totalIncome - totalExpense;
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
-        <p className="text-gray-500 text-sm">Welcome back! Here is your financial summary.</p>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Dashboard Overview</h1>
+        <p className="text-gray-500 text-base mt-2">Welcome back! Here is your financial summary.</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
         <StatCard 
           title="Total Income" 
           amount={totalIncome} 
