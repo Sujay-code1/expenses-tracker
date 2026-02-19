@@ -16,8 +16,23 @@ export const addIncome = async (req, res) => {
 };
 
 export const getIncomes = async (req, res) => {
-  const incomes = await Income.find({ user: req.user.id }).sort({ date: -1 });
-  res.json(incomes);
+  try {
+    const { month } = req.query;
+    const userId = req.user.id;
+
+    const query = { user: userId };
+    if (month) {
+      const start = new Date(`${month}-01`);
+      const end = new Date(start);
+      end.setMonth(end.getMonth() + 1);
+      query.date = { $gte: start, $lt: end };
+    }
+
+    const incomes = await Income.find(query).sort({ date: -1 });
+    res.json(incomes);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
 };
 
 

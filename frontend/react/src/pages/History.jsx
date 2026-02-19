@@ -11,6 +11,11 @@ const History = () => {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
 
+  const [month, setMonth] = useState(() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  });
+
   // Merge and Sort Logic
   const allTransactions = useMemo(() => {
     const merged = [
@@ -25,7 +30,14 @@ const History = () => {
     const matchesSearch = t.label?.toLowerCase().includes(search.toLowerCase()) ||
                           t.category?.toLowerCase().includes(search.toLowerCase());
     const matchesType = filterType === "all" || t.type === filterType;
-    return matchesSearch && matchesType;
+    
+    // Month filtering
+    const transactionDate = new Date(t.date);
+    const selectedMonth = new Date(month);
+    const matchesMonth = transactionDate.getFullYear() === selectedMonth.getFullYear() &&
+                        transactionDate.getMonth() === selectedMonth.getMonth();
+    
+    return matchesSearch && matchesType && matchesMonth;
   });
 
   return (
@@ -38,6 +50,14 @@ const History = () => {
         </div>
         
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+          {/* Month Selector */}
+          <input 
+            type="month" 
+            value={month} 
+            onChange={(e) => setMonth(e.target.value)}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
+          />
+          
           {/* Search Input */}
           <div className="relative flex-1 sm:flex-none">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
@@ -48,7 +68,7 @@ const History = () => {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
-          </div>}
+          </div>
           <select
             className="border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white text-gray-600"
             value={filterType}
