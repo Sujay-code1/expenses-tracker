@@ -1,12 +1,18 @@
-import React, { useState, useMemo } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { setIncome, setLoading as setIncomeLoading, setError as setIncomeError } from "../store/incomeSlice";
+import { setExpensesData, setLoading as setExpenseLoading, setError as setExpenseError } from "../store/expenseSlice";
 import { Search } from "lucide-react";
 import TransactionTable from "../components/TransactionTable";
 
 const History = () => {
+  const dispatch = useDispatch();
   // Pulling from your existing Redux slices
   const incomes = useSelector((state) => state.income.list);
   const expenses = useSelector((state) => state.expense.list);
+  const incomeLoading = useSelector((state) => state.income.isLoading);
+  const expenseLoading = useSelector((state) => state.expense.isLoading);
 
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
@@ -15,6 +21,39 @@ const History = () => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
   });
+
+  const loadIncomes = useCallback(async () => {
+    dispatch(setIncomeLoading(true));
+    try {
+      const res = await axios.get(`http://localhost:5000/api/income?month=${month}`, {
+        withCredentials: true,
+      });
+      dispatch(setIncome(res.data));
+    } catch (err) {
+      dispatch(setIncomeError(err.response?.data?.message || "Failed to load income"));
+    } finally {
+      dispatch(setIncomeLoading(false));
+    }
+  }, [month, dispatch]);
+
+  const loadExpenses = useCallback(async () => {
+    dispatch(setExpenseLoading(true));
+    try {
+      const res = await axios.get(`http://localhost:5000/api/expense?month=${month}`, {
+        withCredentials: true,
+      });
+      dispatch(setExpensesData(res.data));
+    } catch (err) {
+      dispatch(setExpenseError(err.response?.data?.message || "Failed to load expenses"));
+    } finally {
+      dispatch(setExpenseLoading(false));
+    }
+  }, [month, dispatch]);
+
+  useEffect(() => {
+    loadIncomes();
+    loadExpenses();
+  }, [loadIncomes, loadExpenses]);
 
   // Merge and Sort Logic
   const allTransactions = useMemo(() => {
@@ -81,8 +120,16 @@ const History = () => {
         </div>
       </div>
 
-      {/* Reusable Table Component */}
-      <TransactionTable data={filtered} />
+      {/* Loading State */}
+      {(incomeLoading || expenseLoading) ? (
+        <div className="flex justify-center items-center py-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          <span className="ml-2 text-gray-600">Loading transactions...</span>
+        </div>
+      ) : (
+        /* Reusable Table Component */
+        <TransactionTable data={filtered} />
+      )}
     </div>
   );
 };
