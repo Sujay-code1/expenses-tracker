@@ -1,41 +1,146 @@
-import React from "react";
+import React, { useState } from "react";
+import { Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import BudgetForm from "./BudgetForm";
 
-const BudgetTable = ({ budgets = [] }) => {
+const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, month }) => {
+  const [editingBudget, setEditingBudget] = useState(null);
+
   // Return early if no data to prevent mapping errors
   if (!budgets || budgets.length === 0) {
-    return <div className="p-10 text-center text-gray-400 font-medium">No budget goals found.</div>;
+    const monthName = month ? new Date(month + '-01').toLocaleDateString('en-US', { year: 'numeric', month: 'long' }) : 'this month';
+    return (
+      <div className="p-10 text-center">
+        <div className="text-gray-400 font-medium mb-2">No budget goals found for {monthName}</div>
+        <div className="text-sm text-gray-500">Set your monthly budget limits to start tracking your spending.</div>
+      </div>
+    );
   }
 
+  const handleEdit = (budget) => {
+    setEditingBudget(budget);
+  };
+
+  const handleEditClose = () => {
+    setEditingBudget(null);
+  };
+
+  const handleReset = async (category) => {
+    if (window.confirm(`Are you sure you want to reset the budget for ${category}?`)) {
+      try {
+        const response = await fetch("http://localhost:5000/api/budget/reset", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ category, month }),
+        });
+
+        if (response.ok) {
+          // Trigger refresh instead of reloading the page
+          if (onRefresh) {
+            onRefresh();
+          } else {
+            window.location.reload();
+          }
+        } else {
+          alert("Failed to reset budget");
+        }
+      } catch (error) {
+        console.error("Error resetting budget:", error);
+        alert("Error resetting budget");
+      }
+    }
+  };
+
   return (
+    <>
     <div className="w-full overflow-hidden rounded-xl border border-gray-100">
       <table className="w-full text-left bg-white border-collapse">
         <thead className="bg-gray-50 border-b border-gray-100">
           <tr className="text-[10px] font-black uppercase tracking-widest text-gray-400">
-            <th className="px-6 py-4">Category</th>
-            <th className="px-6 py-4 text-center">Monthly Limit</th>
-            <th className="px-6 py-4 text-center">Actual Spent</th>
-            <th className="px-6 py-4 text-right">Usage</th>
-          </tr>
-        </thead>
+              <th className="px-6 py-4">Category</th>
+              <th className="px-6 py-4 text-center">Monthly Limit</th>
+              <th className="px-6 py-4 text-center">Actual Spent</th>
+              <th className="px-6 py-4 text-right">Usage</th>
+              <th className="px-6 py-4 text-center">Actions</th>
+            </tr>
+          </thead>
         <tbody className="divide-y divide-gray-50">
           {budgets.map((b, index) => {
             const usage = b.limit > 0 ? (b.spent / b.limit) * 100 : 0;
             return (
-              <tr key={index} className="hover:bg-gray-50/50 transition-colors">
+              <tr key={index} className="hover:bg-gray-50 transition-colors">
                 <td className="px-6 py-4 font-bold text-gray-800">{b.category}</td>
                 <td className="px-6 py-4 text-center text-gray-600 font-medium">₹{b.limit}</td>
                 <td className="px-6 py-4 text-center text-gray-600 font-medium">₹{b.spent}</td>
-                <td className="px-6 py-4 text-right">
-                  <span className={`text-[11px] font-black px-3 py-1 rounded-full ${usage > 100 ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}>
-                    {Math.round(usage)}%
-                  </span>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                  <td className="px-6 py-4 text-right">
+                    <span className={`text-[11px] font-black px-3 py-1 rounded-full ${usage > 100 ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}>
+                      {Math.round(usage)}%
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => handleEdit(b)}
+                        className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        title="Edit budget"
+                      >
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleReset(b.category)}
+                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        title="Reset budget"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm text-gray-600">
+            Showing {((pagination.currentPage - 1) * 10) + 1} to {Math.min(pagination.currentPage * 10, pagination.totalBudgets)} of {pagination.totalBudgets} budgets
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onPageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrev}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="text-sm text-gray-600">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => onPageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNext}
+              className="p-2 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editingBudget && (
+        <BudgetForm
+          editBudget={editingBudget}
+          onClose={handleEditClose}
+          onRefresh={onRefresh}
+        />
+      )}
+    </>
   );
 };
 

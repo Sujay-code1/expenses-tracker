@@ -13,10 +13,10 @@ const BudgetCard = ({ total, spent }) => {
           <p className="text-2xl font-bold text-blue-600 mt-1">₹{spent.toLocaleString('en-IN')}</p>
         </div>
       </div>
-      
+
       {/* Subtle Progress Bar added for context */}
       <div className="mt-4 w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-        <div 
+        <div
           className={`h-full transition-all duration-500 ${progress > 100 ? 'bg-red-500' : 'bg-blue-500'}`}
           style={{ width: `${Math.min(progress, 100)}%` }}
         ></div>

@@ -10,12 +10,12 @@ const Layout = () => {
     <div className="flex h-screen bg-gray-50">
       {/* Mobile Sidebar Backdrop */}
       {open && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/40 z-40 md:hidden"
           onClick={() => setOpen(false)}
         />
       )}
-      
+
       {/* Sidebar - Hidden on mobile by default */}
       <div className={`fixed md:relative z-50 md:z-auto transition-transform duration-300 md:translate-x-0 ${
         open ? 'translate-x-0' : '-translate-x-full md:translate-x-0'

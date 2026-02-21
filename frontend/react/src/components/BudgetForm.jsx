@@ -1,21 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setBudgets, setError } from "../store/budgetSlice";
-import { X, Plus, Target } from "lucide-react";
+import { X, Plus, Target, Edit } from "lucide-react";
 
 const CATEGORIES = ["Food", "Transport", "Rent", "Utilities", "Shopping", "Entertainment", "Other"];
 
-const BudgetForm = () => {
+const BudgetForm = ({ editBudget = null, onClose = null, onRefresh = null, month = null }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [category, setCategory] = useState("Food");
-  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState(editBudget ? editBudget.category : "Food");
+  const [amount, setAmount] = useState(editBudget ? editBudget.limit.toString() : "");
   const dispatch = useDispatch();
 
-  // The missing handleUpdate function
-  const handleUpdate = async (e) => {
+  useEffect(() => {
+    if (editBudget) {
+      setCategory(editBudget.category);
+      setAmount(editBudget.limit.toString());
+      setIsOpen(true);
+    }
+  }, [editBudget]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Safety check for empty amount
     if (!amount || amount <= 0) {
       alert("Please enter a valid budget amount");
@@ -23,39 +30,124 @@ const BudgetForm = () => {
     }
 
     try {
-      // 1. Send data to the backend
-      await axios.post(
-        "http://localhost:5000/api/budget/set",
-        { 
-          category: category, 
-          limit: Number(amount) // Ensure this matches your backend field name (limit or amount)
-        },
-        { withCredentials: true }
-      );
+      let response;
+      if (editBudget) {
+        // Update existing budget
+        response = await axios.put(
+          "http://localhost:5000/api/budget/update",
+          {
+            category: category,
+            limit: Number(amount),
+            month: month
+          },
+          { withCredentials: true }
+        );
+      } else {
+        // Create new budget
+        response = await axios.post(
+          "http://localhost:5000/api/budget/set",
+          {
+            category: category,
+            limit: Number(amount),
+            month: month
+          },
+          { withCredentials: true }
+        );
+      }
 
-      // 2. Refresh the list from the server to keep UI in sync
-      const { data } = await axios.get("http://localhost:5000/api/budget/report", { 
-        withCredentials: true 
-      });
-      
-      // 3. Update Redux store
-      dispatch(setBudgets(data));
-      
-      // 4. Reset form and close modal
+      // Update Redux store
+      dispatch(setBudgets(response.data));
+
+      // Reset form and close modal
       setAmount("");
       setIsOpen(false);
-      alert("Budget updated successfully!");
+      if (onClose) onClose();
+      alert(editBudget ? "Budget updated successfully!" : "Budget created successfully!");
 
     } catch (err) {
       console.error("Save Error:", err.response?.data);
-      dispatch(setError(err.response?.data?.message || "Failed to update budget"));
+      dispatch(setError(err.response?.data?.message || `Failed to ${editBudget ? 'update' : 'create'} budget`));
     }
   };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    setAmount("");
+    if (onClose) onClose();
+  };
+
+  if (editBudget) {
+    return (
+      <>
+        {isOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              onClick={handleClose}
+            />
+
+            {/* Modal Content */}
+            <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl animate-in zoom-in duration-200">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                  <Edit className="text-blue-600" size={20} />
+                  <h3 className="text-xl font-bold text-slate-800">Edit Budget</h3>
+                </div>
+                <button onClick={handleClose} className="text-slate-400 hover:text-slate-600">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-5">
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+                    Category
+                  </label>
+                  <select
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 appearance-none cursor-pointer"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    disabled={true} // Disable category change when editing
+                  >
+                    {CATEGORIES.map(cat => (
+                      <option key={cat} value={cat} className="bg-white text-gray-900">{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+                    Monthly Limit (₹)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g. 5000"
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-gray-900 placeholder-gray-500"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg active:scale-[0.98]"
+                >
+                  Update Budget
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  }
 
   return (
     <>
       {/* THE BUTTON: This triggers the popup */}
-      <button 
+      <button
         onClick={() => setIsOpen(true)}
         className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all flex items-center gap-2 text-sm shadow-sm"
       >
@@ -67,35 +159,35 @@ const BudgetForm = () => {
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" 
-            onClick={() => setIsOpen(false)} 
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            onClick={handleClose}
           />
-          
+
           {/* Modal Content */}
           <div className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl animate-in zoom-in duration-200">
-            <div className="flex justify-between items-center p-6 border-b">
+            <div className="flex justify-between items-center p-6 border-b border-gray-200">
               <div className="flex items-center gap-2">
                 <Target className="text-blue-600" size={20} />
                 <h3 className="text-xl font-bold text-slate-800">Set Budget</h3>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={handleClose} className="text-slate-400 hover:text-slate-600">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleUpdate} className="p-6 space-y-5">
+            <form onSubmit={handleSubmit} className="p-6 space-y-5">
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">
                   Category
                 </label>
-                <select 
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                <select
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 appearance-none cursor-pointer"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                 >
                   {CATEGORIES.map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat} value={cat} className="bg-white text-gray-900">{cat}</option>
                   ))}
                 </select>
               </div>
@@ -104,17 +196,17 @@ const BudgetForm = () => {
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">
                   Monthly Limit (₹)
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   placeholder="e.g. 5000"
-                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-semibold"
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 font-semibold text-gray-900 placeholder-gray-500"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   required
                 />
               </div>
 
-              <button 
+              <button
                 type="submit"
                 className="w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-lg active:scale-[0.98]"
               >
