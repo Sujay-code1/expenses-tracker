@@ -21,6 +21,12 @@ const port = process.env.PORT || 8000
 app.use(express.json());
 app.use(cookieParser());
 
+app.get("/",(req,res)=>{
+  res.send({
+    activeStatus:true,
+    error:false
+  })
+})
 
 app.use(
   cors({
