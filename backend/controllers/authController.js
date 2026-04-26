@@ -89,7 +89,11 @@ export const Login = async (req, res) => {
       });
 
   } catch (error) {
-    console.error(error);
+     console.log("🔥 LOGIN ERROR:", error);
+  console.log("🔥 MESSAGE:", error.message);
+  console.log("🔥 STACK:", error.stack);
+  console.log("ENV KEYS:", Object.keys(process.env));
+console.log("JWT:", process.env.JWT_SECRET);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

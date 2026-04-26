@@ -9,7 +9,9 @@ import budgetRoutes from "./routes/budgetRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import cors from "cors";
 
-dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config();
+}
 
 // Connect Database
 connectDb();
@@ -27,7 +29,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://unique-smakager-7570a5.netlify.app/"
+      "https://unique-smakager-7570a5.netlify.app",
+       "https://expenses-tracker-nmb3q2oye-sujay-paramaniks-projects.vercel.app"
     ],
     credentials: true,
   })

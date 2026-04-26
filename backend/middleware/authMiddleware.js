@@ -22,6 +22,7 @@ export const protect = (req, res, next) => {
 
     next();
   } catch (error) {
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
     console.error("Auth Middleware Error:", error.message);
     
     // Check if error is specifically because token expired
