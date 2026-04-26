@@ -6,6 +6,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import axios from "axios";
 
 const Login = () => {
+  console.log("API URL:", import.meta.env.VITE_API_URL)
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isLoading, error } = useSelector((state) => state.auth);
