@@ -10,10 +10,16 @@ import transactionRoutes from "./routes/transactionRoutes.js";
 import cors from "cors";
 
 dotenv.config();
+
+// Connect Database
 connectDb();
 
 const app = express();
 
+// Port
+const PORT = process.env.PORT || 8000;
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
@@ -21,12 +27,13 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://yourfrontend.netlify.app"
+      "https://unique-smakager-7570a5.netlify.app/"
     ],
     credentials: true,
   })
 );
 
+// Test Route
 app.get("/", (req, res) => {
   res.json({
     activeStatus: true,
@@ -34,10 +41,16 @@ app.get("/", (req, res) => {
   });
 });
 
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/income", incomeRoutes);
 app.use("/api/expense", expenseRoutes);
 app.use("/api/budget", budgetRoutes);
 app.use("/api/transactions", transactionRoutes);
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
 
 export default app;

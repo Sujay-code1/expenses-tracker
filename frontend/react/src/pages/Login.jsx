@@ -21,14 +21,18 @@ const Login = () => {
     dispatch(setLoading(true));
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", formData, {
+       const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/api/auth/login`,
+      formData,
+      {
         withCredentials: true,
-      });
-
+      }
+    );
       dispatch(setUser(res.data.user));
       navigate("/dashboard");
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Login failed"));
+      console.error("Login Error:", err);
     } finally {
       dispatch(setLoading(false));
     }
