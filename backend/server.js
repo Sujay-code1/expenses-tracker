@@ -30,7 +30,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://unique-smakager-7570a5.netlify.app",
-       "https://expenses-tracker-nmb3q2oye-sujay-paramaniks-projects.vercel.app"
+       
     ],
     credentials: true,
   })
