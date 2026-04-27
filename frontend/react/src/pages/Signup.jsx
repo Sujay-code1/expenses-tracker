@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setError } from "../store/userSlice";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 
 const Signup = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ const Signup = () => {
     dispatch(setLoading(true));
 
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/register`, formData, )
+      await api.post("/api/auth/register", formData)
       navigate("/login");
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Signup failed"));

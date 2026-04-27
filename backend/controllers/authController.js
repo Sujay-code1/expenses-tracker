@@ -32,7 +32,7 @@ export const register = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: false, // true in production
-        sameSite: "strict"
+        sameSite: "None",
       })
       .json({
         message: "User created successfully",

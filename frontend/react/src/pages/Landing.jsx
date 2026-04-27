@@ -13,7 +13,7 @@ const Landing = () => {
           <div className="bg-indigo-600 p-2 rounded-lg text-white">
             <Wallet size={24} />
           </div>
-          <span className="text-xl font-bold text-gray-800 tracking-tight">
+          <span className="md:text-xl text-m font-bold text-gray-800 tracking-tight">
             ExpenseTracker
           </span>
         </div>
@@ -27,7 +27,7 @@ const Landing = () => {
           </button>
           <button 
             onClick={() => navigate("/signup")}
-            className="bg-indigo-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-indigo-700 transition shadow-md"
+            className="bg-indigo-600 text-white md:px-6 md:py-2.5  px-4 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition shadow-md"
           >
             Sign Up
           </button>

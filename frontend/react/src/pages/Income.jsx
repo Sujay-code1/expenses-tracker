@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 import { setIncome, setLoading, setError } from "../store/incomeSlice";
 
 import IncomeForm from "../components/IncomeForm";
@@ -24,9 +24,7 @@ const Income = () => {
   const loadIncome = useCallback(async () => {
     dispatch(setLoading(true));
     try {
-      const res = await axios.get(`http://localhost:5000/api/income?month=${month}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/api/income?month=${month}`)
       dispatch(setIncome(res.data));
       setCurrentPage(1);
     } catch (err) {

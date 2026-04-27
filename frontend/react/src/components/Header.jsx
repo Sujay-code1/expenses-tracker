@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+import {  Wallet } from "lucide-react";
 
 const Header = ({ onMenuClick }) => {
   const { user } = useSelector(state => state.auth);
@@ -13,11 +14,20 @@ const Header = ({ onMenuClick }) => {
         >
           <span className="text-2xl">☰</span>
         </button>
+        
 
-        <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
-          💰 ExpenseTracker
-        </h1>
+         <div className="flex items-center  gap-2">
+          <div className="bg-indigo-600 p-2 rounded-lg text-white">
+            <Wallet size={24} />
+          </div>
+          <span className="text-xl font-bold text-gray-800 tracking-tight">
+            ExpenseTracker
+          </span>
+        </div>
+       
       </div>
+
+      
 
       <span className="hidden sm:block text-gray-700 font-medium text-sm sm:text-base">
         Welcome, {user?.fullName || "User"}!

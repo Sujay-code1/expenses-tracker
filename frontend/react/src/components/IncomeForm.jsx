@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addIncome } from "../store/incomeSlice";
 import { X } from "lucide-react";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 
 const IncomeForm = () => {
   const dispatch = useDispatch();
@@ -25,9 +25,7 @@ const IncomeForm = () => {
     }
 
     try {
-      const res = await axios.post("http://localhost:5000/api/income", form, {
-        withCredentials: true,
-      });
+      const res = await api.post("/api/income", form);
 
       dispatch(addIncome(res.data)); 
       

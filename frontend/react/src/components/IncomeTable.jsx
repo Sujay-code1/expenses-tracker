@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { removeIncome } from "../store/incomeSlice";
 import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 
 const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => {
   const dispatch = useDispatch();
@@ -9,9 +9,7 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this income record?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/income/${id}`, {
-          withCredentials: true,
-        });
+        await api.delete(`/api/income/${id}`);
         dispatch(removeIncome(id));
       } catch (err) {
         console.error("Delete Error:", err);

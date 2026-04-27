@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setLoading, setError, setUser } from "../store/userSlice";
 import { useNavigate, Link } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 
 const Login = () => {
   console.log("API URL:", import.meta.env.VITE_API_URL)
@@ -22,13 +22,8 @@ const Login = () => {
     dispatch(setLoading(true));
 
     try {
-       const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/login`,
-      formData,
-      {
-        withCredentials: true,
-      }
-    );
+       const res =await api.post("/api/auth/login", formData)
+    
       dispatch(setUser(res.data.user));
       navigate("/dashboard");
     } catch (err) {
