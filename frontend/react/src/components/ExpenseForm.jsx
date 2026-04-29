@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../utils/axios.js"; 
 import { useDispatch } from "react-redux";
 import { addExpenseToState } from "../store/expenseSlice";
 import { Plus, X } from "lucide-react"; 
@@ -17,9 +17,7 @@ const ExpenseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/api/expense", formData, {
-        withCredentials: true,
-      });
+      const res = await api.post("/api/expense", formData);
       
       dispatch(addExpenseToState(res.data));
       setFormData({ amount: "", category: "Food", description: "", date: new Date().toISOString().split("T")[0] });
@@ -34,7 +32,7 @@ const ExpenseForm = () => {
       {/* The Main Trigger Button */}
       <button 
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg font-medium"
+        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all shadow-lg font-medium cursor-pointer"
       >
         <Plus size={20} /> Add Expense
       </button>
@@ -112,7 +110,7 @@ const ExpenseForm = () => {
                 </button>
                 <button 
                   type="submit" 
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-bold shadow-blue-200 shadow-xl transition-all active:scale-95"
+                  className="cursor-pointer  flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-bold shadow-blue-200 shadow-xl transition-all active:scale-95"
                 >
                   Save
                 </button>

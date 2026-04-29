@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import api from "../utils/axios.js";
 import { setLoading, setBudgets, setError } from "../store/budgetSlice";
 
 // Component Imports
@@ -22,9 +22,7 @@ const Budget = () => {
   const fetchReport = useCallback(async (page = 1) => {
     dispatch(setLoading(true));
     try {
-      const { data } = await axios.get(`http://localhost:5000/api/budget/report?page=${page}&limit=10&month=${month}`, {
-        withCredentials: true
-      });
+      const { data } = await api.get(`/api/budget/report?page=${page}&limit=10&month=${month}`);
       // DATA is now { budgets: [...], totalLimit: X, totalSpent: Y, pagination: {...} }
       // Pass the WHOLE object to Redux
       dispatch(setBudgets(data));

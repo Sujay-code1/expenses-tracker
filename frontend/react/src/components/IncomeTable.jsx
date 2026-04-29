@@ -18,7 +18,7 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
     }
   };
 
-  // Calculate pagination
+  // Calculate pagination/'
   const totalPages = Math.ceil(incomes.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

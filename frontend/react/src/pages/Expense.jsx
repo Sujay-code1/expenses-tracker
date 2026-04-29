@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import api from "../utils/axios.js";
 // ADDED removeExpense to the imports here
 import { setExpensesData, setLoading, setError, removeExpense } from "../store/expenseSlice";
 import ExpenseForm from "../components/ExpenseForm";
@@ -31,9 +31,7 @@ const Expense = () => {
     dispatch(setLoading(true));
     dispatch(setError(null));
     try {
-      const res = await axios.get(`http://localhost:5000/api/expense?month=${month}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/api/expense?month=${month}`);
       dispatch(setExpensesData(res.data)); 
     } catch (err) {
       console.error("Expense Load Error:", err);
@@ -47,9 +45,7 @@ const Expense = () => {
   const handleDeleteExpense = async (id) => {
     if (window.confirm("Are you sure you want to delete this expense?")) {
       try {
-        await axios.delete(`http://localhost:5000/api/expense/${id}`, { 
-          withCredentials: true 
-        });
+        await api.delete(`api/expense/${id}`);
         
         // 1. Instantly remove from Redux (UI feels fast)
         dispatch(removeExpense(id)); 
