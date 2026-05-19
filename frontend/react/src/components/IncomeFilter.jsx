@@ -21,3 +21,6 @@ const IncomeFilter = ({ filter, setFilter }) => {
     </div>
   );
 };
+
+
+export default IncomeFilter;

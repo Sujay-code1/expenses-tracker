@@ -226,7 +226,7 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
             </button>
           </div>
         </div>
-      )}}
+      )}
     </div>
   );
 };
