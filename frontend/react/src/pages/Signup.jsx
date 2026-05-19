@@ -33,7 +33,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 to-blue-200">
+    <div className="min-h-screen flex items-center justify-center bg-slate-800">
       <div className="bg-white w-full max-w-md p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Create Account
@@ -79,7 +79,7 @@ const Signup = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold transition cursor-pointer"
           >
             {isLoading ? "Creating account..." : "Sign Up"}
           </button>

@@ -2,10 +2,12 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { addIncome } from "../store/incomeSlice";
 import { X } from "lucide-react";
-import api from "../utils/axios.js"; 
+import api from "../utils/axios.js";
+import { useTheme } from "../store/ThemeContext"; 
 
 const IncomeForm = () => {
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
   const [open, setOpen] = useState(false);
   
   // Initial state helper to keep code clean
@@ -47,20 +49,20 @@ const IncomeForm = () => {
       </button>
 
       {open && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-md rounded-xl shadow-lg p-7 space-y-6 relative">
+        <div className={`fixed inset-0 flex items-center justify-center z-50 ${isDark ? 'bg-black/70' : 'bg-black/50'} backdrop-blur-sm`}>
+          <div className={`w-full max-w-md rounded-xl shadow-lg p-7 space-y-6 relative transition-colors ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
             <div className="flex justify-between items-center">
-              <h3 className="text-xl font-semibold">Add New Income</h3>
-              <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className={`text-xl font-semibold transition-colors ${isDark ? 'text-white' : 'text-gray-900'}`}>Add New Income</h3>
+              <button onClick={() => setOpen(false)} className={`transition-colors ${isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}>
                 <X size={22} />
               </button>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">Source</label>
+                <label className={`text-sm font-medium transition-colors ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Source</label>
                 <input
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className={`mt-1 w-full rounded-lg border p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-gray-300 bg-white text-gray-900'}`}
                   placeholder="Salary, Freelance..."
                   value={form.source}
                   onChange={e => setForm({ ...form, source: e.target.value })}
@@ -68,20 +70,20 @@ const IncomeForm = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-600">Date</label>
+                <label className={`text-sm font-medium transition-colors ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Date</label>
                 <input 
                   type="date" 
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                  value={form.date} // FIXED: Changed from formData.date to form.date
-                  onChange={(e) => setForm({ ...form, date: e.target.value })} // FIXED: Changed from setFormData to setForm
+                  className={`mt-1 w-full rounded-lg border p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-gray-300 bg-white text-gray-900'}`}
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-600">Amount</label>
+                <label className={`text-sm font-medium transition-colors ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Amount</label>
                 <input
                   type="number"
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className={`mt-1 w-full rounded-lg border p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-gray-300 bg-white text-gray-900'}`}
                   placeholder="₹ Amount"
                   value={form.amount}
                   onChange={e => setForm({ ...form, amount: e.target.value })}
@@ -89,9 +91,9 @@ const IncomeForm = () => {
               </div>
 
               <div>
-                <label className="text-sm font-medium text-gray-600">Frequency</label>
+                <label className={`text-sm font-medium transition-colors ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Frequency</label>
                 <select
-                  className="mt-1 w-full rounded-lg border border-gray-300 p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className={`mt-1 w-full rounded-lg border p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-colors ${isDark ? 'bg-slate-700 border-slate-600 text-white' : 'border-gray-300 bg-white text-gray-900'}`}
                   value={form.frequency}
                   onChange={e => setForm({ ...form, frequency: e.target.value })}
                 >

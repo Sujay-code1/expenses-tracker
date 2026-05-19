@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios.js";
 import { setLoading, setBudgets, setError } from "../store/budgetSlice";
+import { useTheme } from "../store/ThemeContext";
 
 // Component Imports
 import BudgetCard from "../components/BudgetCard";
@@ -10,6 +11,7 @@ import BudgetForm from "../components/BudgetForm";
 
 const Budget = () => {
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
   // Provide a default empty array [] to prevent .reduce errors
   const { budgets = [], totalLimit, totalSpent, pagination, isLoading, error } = useSelector((state) => state.budget);
@@ -48,15 +50,24 @@ const Budget = () => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Budget Planning</h2>
-          <p className="text-gray-500 text-sm mt-1">Set and monitor your budget limits</p>
+          <h2 className={`text-3xl sm:text-4xl font-bold transition-colors duration-300 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>Budget Planning</h2>
+          <p className={`text-sm mt-1 transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>Set and monitor your budget limits</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <input
             type="month"
             value={month}
             onChange={(e) => handleMonthChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white text-gray-900"
+            className={`rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none border transition-colors duration-300 ${
+              isDark
+                ? "bg-slate-800 border-slate-700 text-white"
+                : "border-gray-300 bg-white text-gray-900"
+            }`}
+          />
           />
           <BudgetForm month={month} />
         </div>

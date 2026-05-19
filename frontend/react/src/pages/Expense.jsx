@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios.js";
-// ADDED removeExpense to the imports here
 import { setExpensesData, setLoading, setError, removeExpense } from "../store/expenseSlice";
+import { useTheme } from "../store/ThemeContext";
+
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseTable from "../components/ExpenseTable";
 import ExpenseCard from "../components/ExpenseCard";
@@ -11,6 +12,7 @@ import ExpenseFilter from "../components/ExpenseFilter";
 const Expense = () => {
   const dispatch = useDispatch();
   const { list, isLoading, error } = useSelector(state => state.expense);
+  const { isDark } = useTheme();
   const [filter, setFilter] = useState("all");
   
   //pagination
@@ -80,23 +82,33 @@ const Expense = () => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Expense Tracker</h2>
-          <p className="text-gray-500 text-sm mt-1">Track and manage your daily expenses</p>
+          <h2 className={`text-3xl sm:text-4xl font-bold transition-colors duration-300 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>Expense Tracker</h2>
+          <p className={`text-sm mt-1 transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>Track and manage your daily expenses</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <input 
             type="month" 
             value={month} 
             onChange={(e) => setMonth(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
+            className={`rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-red-500 outline-none border transition-colors duration-300 ${
+              isDark
+                ? "bg-slate-800 border-slate-700 text-white"
+                : "border-gray-300 bg-white text-gray-900"
+            }`}
           />
           <ExpenseForm />
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-          <p className="text-red-700">{error}</p>
+        <div className={`border-l-4 border-red-500 p-4 rounded-lg transition-colors duration-300 ${
+          isDark ? "bg-red-900/20" : "bg-red-50"
+        }`}>
+          <p className={isDark ? "text-red-400" : "text-red-700"}>{error}</p>
         </div>
       )}
 

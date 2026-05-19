@@ -9,10 +9,12 @@ import {
   MdLogout,
 } from "react-icons/md";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { useTheme } from "../store/ThemeContext";
 
 function Sidebar({ isOpen, toggleSidebar, onLogout }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { isDark } = useTheme();
 
   const menu = [
     { icon: <MdDashboard />, label: "Dashboard", path: "/dashboard" },
@@ -25,15 +27,22 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
 
   return (
     <aside
-      className={`h-screen bg-white shadow-lg border-r border-gray-200 transition-all duration-300 flex flex-col flex-shrink-0
-      ${
+      className={`h-screen shadow-lg transition-all duration-300 flex flex-col flex-shrink-0 ${
+        isDark
+          ? "bg-gray-800 border-r border-gray-700"
+          : "bg-blue-700 border-r border-blue-800"
+      } ${
         isOpen ? "w-64" : "w-20"
       }`}
     >
       {/* Toggle */}
       <button
         onClick={toggleSidebar}
-        className="hidden md:flex self-end mb-6 p-2 bg-indigo-600 text-white rounded-lg shadow-md hover:bg-indigo-700 transition m-4"
+        className={`hidden md:flex self-end mb-6 p-2 rounded-lg shadow-md transition m-4 ${
+          isDark
+            ? "bg-gray-700 text-gray-200 hover:bg-gray-600"
+            : "bg-indigo-600 text-white hover:bg-indigo-700"
+        }`}
       >
         {isOpen ? <IoIosArrowBack size={20} /> : <IoIosArrowForward size={20} />}
       </button>
@@ -47,10 +56,15 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
               navigate(item.path);
               window.innerWidth < 768 && toggleSidebar();
             }}
-            className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full whitespace-nowrap
-              ${pathname === item.path 
-                ? "bg-indigo-600 text-white shadow-md" 
-                : "text-gray-700 hover:bg-indigo-50"}`}
+            className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full whitespace-nowrap ${
+              pathname === item.path 
+                ? isDark
+                  ? "bg-purple-600 text-white shadow-md"
+                  : "bg-indigo-600 text-white shadow-md"
+                : isDark
+                ? "text-gray-200 hover:bg-gray-700"
+                : "text-white hover:bg-blue-600"
+            }`}
           >
             <span className="text-xl flex-shrink-0">{item.icon}</span>
             {isOpen && <span className="text-sm">{item.label}</span>}
@@ -59,13 +73,19 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
       </nav>
 
       {/* Logout */}
-      <div className="p-4 border-t border-gray-200">
+      <div className={`p-4 border-t transition-colors duration-300 ${
+        isDark ? "border-gray-700" : "border-blue-800"
+      }`}>
         <button
           onClick={()=>{
             navigate("/");
             window.innerWidth < 768 && toggleSidebar();
           }}
-          className="flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full text-red-600 hover:bg-red-50 whitespace-nowrap"
+          className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full whitespace-nowrap ${
+            isDark
+              ? "text-red-400 hover:bg-red-600/20"
+              : "text-white hover:bg-red-600/20"
+          }`}
         >
           <span className="text-xl flex-shrink-0">
             <MdLogout />

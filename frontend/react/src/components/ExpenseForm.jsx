@@ -2,10 +2,12 @@ import { useState } from "react";
 import api from "../utils/axios.js"; 
 import { useDispatch } from "react-redux";
 import { addExpenseToState } from "../store/expenseSlice";
-import { Plus, X } from "lucide-react"; 
+import { Plus, X } from "lucide-react";
+import { useTheme } from "../store/ThemeContext"; 
 
 const ExpenseForm = () => {
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
@@ -47,37 +49,46 @@ const ExpenseForm = () => {
           ></div>
 
           {/* THE MODAL CONTENT */}
-          <div className="relative bg-white rounded-3xl p-8 w-full max-w-md shadow-[0_20px_50px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in duration-300 border border-blue-50">
+          <div className={`relative rounded-3xl p-8 w-full max-w-md shadow-[0_20px_50px_rgba(0,0,0,0.1)] animate-in fade-in zoom-in duration-300 border transition-colors ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-blue-50'}`}>
             
             <button 
               onClick={() => setIsOpen(false)}
-              className="absolute top-5 right-5 text-gray-400 hover:text-blue-600 transition-colors"
+              className={`absolute top-5 right-5 transition-colors ${isDark ? 'text-gray-500 hover:text-red-400' : 'text-gray-400 hover:text-blue-600'}`}
             >
               <X size={24} />
             </button>
 
-            <h3 className="text-2xl font-bold text-blue-900 mb-6">New Expense</h3>
+            <h3 className={`text-2xl font-bold mb-6 transition-colors ${isDark ? 'text-white' : 'text-blue-900'}`}>New Expense</h3>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-blue-800 ml-1">Amount (₹)</label>
+                <label className={`text-sm font-semibold ml-1 transition-colors ${isDark ? 'text-gray-300' : 'text-blue-800'}`}>Date</label>
+                <input 
+                  type="date" 
+                  value={formData.date}
+                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all ${isDark ? 'bg-slate-700 border border-slate-600 text-white focus:bg-slate-600' : 'bg-blue-50/50 border border-blue-100 focus:bg-white'}`}
+                  required
+                />
+              </div>
+              <div className="space-y-1">
+                <label className={`text-sm font-semibold ml-1 transition-colors ${isDark ? 'text-gray-300' : 'text-blue-800'}`}>Amount (₹)</label>
                 <input 
                   type="number" 
                   value={formData.amount}
                   onChange={(e) => setFormData({...formData, amount: e.target.value})}
-                  className="w-full bg-blue-50/50 border border-blue-100 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all text-lg font-semibold" 
+                  className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all text-lg font-semibold ${isDark ? 'bg-slate-700 border border-slate-600 text-white focus:bg-slate-600' : 'bg-blue-50/50 border border-blue-100 focus:bg-white'}`}
                   placeholder="0.00"
                   required 
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-blue-800 ml-1">Category</label>
+                <label className={`text-sm font-semibold ml-1 transition-colors ${isDark ? 'text-gray-300' : 'text-blue-800'}`}>Category</label>
                 <select 
                   value={formData.category}
                   onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="w-full bg-blue-50/50 border border-blue-100 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all"
-                 color="blue">
+                  className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all ${isDark ? 'bg-slate-700 border border-slate-600 text-white focus:bg-slate-600' : 'bg-blue-50/50 border border-blue-100 focus:bg-white'}`}>
                   <option value="Food"> Food</option>
                   <option value="Transport"> Transport</option>
                   <option value="Rent"> Rent</option>
@@ -90,12 +101,12 @@ const ExpenseForm = () => {
               </div>
 
               <div className="space-y-1">
-                <label className="text-sm font-semibold text-blue-800 ml-1">Description</label>
+                <label className={`text-sm font-semibold ml-1 transition-colors ${isDark ? 'text-gray-300' : 'text-blue-800'}`}>Description</label>
                 <input 
                   type="text" 
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="w-full bg-blue-50/50 border border-blue-100 p-3 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all"
+                  className={`w-full p-3 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all ${isDark ? 'bg-slate-700 border border-slate-600 text-white focus:bg-slate-600' : 'bg-blue-50/50 border border-blue-100 focus:bg-white'}`}
                   placeholder="e.g. Dinner with friends"
                 />
               </div>
@@ -104,13 +115,13 @@ const ExpenseForm = () => {
                 <button 
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 bg-gray-50 text-gray-500 py-3 rounded-xl hover:bg-gray-100 font-medium transition-colors"
+                  className={`flex-1 py-3 rounded-xl hover:opacity-80 font-medium transition-colors ${isDark ? 'bg-slate-700 text-gray-300' : 'bg-gray-50 text-gray-500 hover:bg-gray-100'}`}
                 >
-                
+                  Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="cursor-pointer  flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-bold shadow-blue-200 shadow-xl transition-all active:scale-95"
+                  className="cursor-pointer flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 font-bold shadow-blue-200 shadow-xl transition-all active:scale-95"
                 >
                   Save
                 </button>

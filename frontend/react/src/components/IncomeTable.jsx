@@ -1,10 +1,12 @@
 import { useDispatch } from "react-redux";
 import { removeIncome } from "../store/incomeSlice";
 import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
-import api from "../utils/axios.js"; 
+import api from "../utils/axios.js";
+import { useTheme } from "../store/ThemeContext";
 
 const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => {
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this income record?")) {
@@ -57,10 +59,16 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
 
   return (
     <div className="space-y-4">
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+      <div className={`shadow-lg rounded-xl overflow-hidden border transition-colors duration-300 ${
+        isDark
+          ? "bg-slate-800 border-slate-700"
+          : "bg-white border-gray-100"
+      }`}>
         <table className="w-full border-collapse">
-          <thead className="bg-indigo-50">
-            <tr className="text-sm text-gray-700">
+          <thead className={isDark ? "bg-slate-700" : "bg-indigo-50"}>
+            <tr className={`text-sm ${
+              isDark ? "text-gray-300" : "text-gray-700"
+            }`}>
               <th className="px-6 py-4 text-left font-semibold">Source</th>
               <th className="px-6 py-4 text-left font-semibold">Date</th>
               <th className="px-6 py-4 text-center font-semibold">Amount</th>
@@ -69,22 +77,32 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-100">
+          <tbody className={`divide-y ${
+            isDark ? "divide-slate-700" : "divide-gray-100"
+          }`}>
             {paginatedIncomes.length === 0 ? (
               <tr>
-                <td colSpan="5" className="py-10 text-center text-gray-400">
+                <td colSpan="5" className={`py-10 text-center transition-colors duration-300 ${
+                  isDark ? "text-gray-500" : "text-gray-400"
+                }`}>
                   No income records found
                 </td>
               </tr>
             ) : (
               paginatedIncomes.map((i) => (
-                <tr key={i._id} className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 text-left font-medium text-gray-800">
+                <tr key={i._id} className={`transition-colors ${
+                  isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50/50"
+                }`}>
+                  <td className={`px-6 py-4 text-left font-medium transition-colors duration-300 ${
+                    isDark ? "text-gray-300" : "text-gray-800"
+                  }`}>
                     {i.source}
                   </td>
 
                   {/* ADDED THE MISSING DATE CELL */}
-                  <td className="px-6 py-4 text-left text-gray-600 text-sm">
+                  <td className={`px-6 py-4 text-left text-sm transition-colors duration-300 ${
+                    isDark ? "text-gray-400" : "text-gray-600"
+                  }`}>
                     {new Date(i.date).toLocaleDateString("en-IN", {
                       day: "2-digit",
                       month: "short",
@@ -98,7 +116,11 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
                   </td>
 
                   <td className="px-6 py-4 text-center">
-                    <span className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-medium capitalize">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-colors duration-300 ${
+                      isDark
+                        ? "bg-indigo-900/30 text-indigo-400"
+                        : "bg-indigo-50 text-indigo-700"
+                    }`}>
                       {i.frequency}
                     </span>
                   </td>
@@ -106,7 +128,11 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => handleDelete(i._id)}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                      className={`p-2 rounded-lg transition-colors ${
+                        isDark
+                          ? "text-red-400 hover:bg-red-900/20"
+                          : "text-red-500 hover:bg-red-50"
+                      }`}
                       title="Delete Record"
                     >
                       <Trash2 size={18} />
@@ -121,8 +147,14 @@ const IncomeTable = ({ incomes, currentPage, setCurrentPage, itemsPerPage }) => 
 
       {/* Pagination Controls */}
       {incomes.length > 0 && (
-        <div className="flex flex-col items-center justify-center gap-4 px-6 py-4 bg-white rounded-xl border border-gray-100">
-          <div className="text-sm text-gray-600">
+        <div className={`flex flex-col items-center justify-center gap-4 px-6 py-4 rounded-xl border transition-colors duration-300 ${
+          isDark
+            ? "bg-slate-800 border-slate-700"
+            : "bg-white border-gray-100"
+        }`}>
+          <div className={`text-sm transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-600"
+          }`}>
             Showing <span className="font-semibold">{startIndex + 1}</span> to{" "}
             <span className="font-semibold">
               {Math.min(endIndex, incomes.length)}

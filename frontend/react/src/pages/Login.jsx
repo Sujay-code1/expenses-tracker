@@ -35,7 +35,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-200">
+    <div className="min-h-screen flex items-center justify-center bg-slate-800">
       <div className="bg-white w-full max-w-md p-8 rounded-xl shadow-lg">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
           Login
@@ -82,7 +82,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-green-600 hover:bg-green-700 text-white p-3 rounded-lg font-semibold transition"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg font-semibold transition cursor-pointer"
           >
             {isLoading ? "Signing in..." : "Login"}
           </button>

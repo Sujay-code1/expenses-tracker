@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import api from "../utils/axios.js"; 
+import api from "../utils/axios.js";
 import { setIncome, setLoading, setError } from "../store/incomeSlice";
+import { useTheme } from "../store/ThemeContext";
 
 import IncomeForm from "../components/IncomeForm";
 import IncomeTable from "../components/IncomeTable";
@@ -11,6 +12,7 @@ import TotalIncomeCard from "../components/TotalIncomeCard";
 const Income = () => {
   const dispatch = useDispatch();
   const { list, isLoading, error } = useSelector(state => state.income);
+  const { isDark } = useTheme();
 
   const [filter, setFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,23 +52,33 @@ const Income = () => {
     <div className="space-y-6">
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">Income Sources</h2>
-          <p className="text-gray-500 text-sm mt-1">Manage your income streams</p>
+          <h2 className={`text-3xl sm:text-4xl font-bold transition-colors duration-300 ${
+            isDark ? "text-white" : "text-gray-900"
+          }`}>Income Sources</h2>
+          <p className={`text-sm mt-1 transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-500"
+          }`}>Manage your income streams</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
           <input 
             type="month" 
             value={month} 
             onChange={(e) => setMonth(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-green-500 outline-none"
+            className={`rounded-lg px-4 py-2 shadow-sm focus:ring-2 focus:ring-green-500 outline-none border transition-colors duration-300 ${
+              isDark
+                ? "bg-slate-800 border-slate-700 text-white"
+                : "border-gray-300 bg-white text-gray-900"
+            }`}
           />
           <IncomeForm />
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
-          <p className="text-red-700">{error}</p>
+        <div className={`border-l-4 border-red-500 p-4 rounded-lg transition-colors duration-300 ${
+          isDark ? "bg-red-900/20" : "bg-red-50"
+        }`}>
+          <p className={isDark ? "text-red-400" : "text-red-700"}>{error}</p>
         </div>
       )}
 
@@ -77,7 +89,9 @@ const Income = () => {
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-green-600"></div>
-          <p className="ml-3 text-gray-600">Fetching data...</p>
+          <p className={`ml-3 transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-600"
+          }`}>Fetching data...</p>
         </div>
       ) : (
         <IncomeTable 

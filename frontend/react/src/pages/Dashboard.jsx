@@ -4,10 +4,12 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { TrendingUp, TrendingDown, Wallet } from "lucide-react";
 import StatCard from "../components/StatCard";
+import { useTheme } from "../store/ThemeContext";
 
 const Dashboard = () => {
   const incomes = useSelector((state) => state.income.list);
   const expenses = useSelector((state) => state.expense.list);
+  const { isDark } = useTheme();
 
   // Calculate Totals
   const totalIncome = incomes.reduce((acc, curr) => acc + Number(curr.amount), 0);
@@ -17,8 +19,12 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Dashboard Overview</h1>
-        <p className="text-gray-500 text-base mt-2">Welcome back! Here is your financial summary.</p>
+        <h1 className={`text-3xl sm:text-4xl font-bold transition-colors duration-300 ${
+          isDark ? "text-white" : "text-gray-900"
+        }`}>Dashboard Overview</h1>
+        <p className={`text-base mt-2 transition-colors duration-300 ${
+          isDark ? "text-gray-400" : "text-gray-500"
+        }`}>Welcome back! Here is your financial summary.</p>
       </div>
 
       {/* Stats Grid */}

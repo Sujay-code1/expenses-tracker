@@ -1,6 +1,8 @@
 import { Trash2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useTheme } from "../store/ThemeContext";
 
 const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPerPage }) => {
+  const { isDark } = useTheme();
 
   // Calculate pagination
   const totalPages = Math.ceil(expenses.length / itemsPerPage);
@@ -40,12 +42,18 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
 
   return (
     <div className="space-y-4">
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+      <div className={`shadow-lg rounded-xl overflow-hidden border transition-colors duration-300 ${
+        isDark
+          ? "bg-slate-800 border-slate-700"
+          : "bg-white border-gray-100"
+      }`}>
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             {/* Header matches IncomeTable style */}
-            <thead className="bg-red-50/50">
-              <tr className="text-sm text-gray-700">
+            <thead className={isDark ? "bg-slate-700" : "bg-red-50/50"}>
+              <tr className={`text-sm ${
+                isDark ? "text-gray-300" : "text-gray-700"
+              }`}>
                 <th className="px-6 py-4 text-left font-semibold">Date</th>
                 <th className="px-6 py-4 text-left font-semibold">Spent On</th>
                 <th className="px-6 py-4 text-center font-semibold">Category</th>
@@ -54,17 +62,25 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-gray-100">
+            <tbody className={`divide-y ${
+              isDark ? "divide-slate-700" : "divide-gray-100"
+            }`}>
               {paginatedExpenses && paginatedExpenses.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-12 text-center text-gray-400 font-medium">
+                  <td colSpan="5" className={`py-12 text-center font-medium transition-colors duration-300 ${
+                    isDark ? "text-gray-500" : "text-gray-400"
+                  }`}>
                     No records found for this period.
                   </td>
                 </tr>
               ) : (
                 paginatedExpenses?.map((exp) => (
-                  <tr key={exp._id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
+                  <tr key={exp._id} className={`transition-colors ${
+                    isDark ? "hover:bg-slate-700/50" : "hover:bg-gray-50/50"
+                  }`}>
+                    <td className={`px-6 py-4 text-sm whitespace-nowrap transition-colors duration-300 ${
+                      isDark ? "text-gray-400" : "text-gray-600"
+                    }`}>
                       {new Date(exp.date).toLocaleDateString("en-IN", { 
                         day: '2-digit', 
                         month: 'short',
@@ -72,25 +88,36 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
                       })}
                     </td>
                     
-                    <td className="px-6 py-4 text-sm font-medium text-gray-800">
+                    <td className={`px-6 py-4 text-sm font-medium transition-colors duration-300 ${
+                      isDark ? "text-gray-300" : "text-gray-800"
+                    }`}>
                       {exp.description || "—"}
                     </td>
 
                     <td className="px-6 py-4 text-center">
-                      <span className="px-3 py-1 rounded-full bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wide">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide transition-colors duration-300 ${
+                        isDark
+                          ? "bg-red-900/30 text-red-400"
+                          : "bg-red-50 text-red-600"
+                      }`}>
                         {exp.category}
                       </span>
                     </td>
 
-                    <td className={`px-6 py-4 text-right font-bold ${Number(exp.amount) >= 10000 ? 'text-blue-600' : 'text-red-600'}`}>
+                    <td className={`px-6 py-4 text-right font-bold ${
+                      Number(exp.amount) >= 10000 ? 'text-blue-600' : 'text-red-600'
+                    }`}>
                       ₹{Number(exp.amount).toLocaleString('en-IN' )}
-                    
                     </td>
 
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => onDelete(exp._id)}
-                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
+                        className={`p-2 rounded-lg transition-all ${
+                          isDark
+                            ? "text-gray-500 hover:text-red-400 hover:bg-red-900/20"
+                            : "text-gray-400 hover:text-red-500 hover:bg-red-50"
+                        }`}
                         title="Delete Expense"
                       >
                         <Trash2 size={18} />
@@ -106,8 +133,14 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
 
       {/* Pagination Controls */}
       {expenses.length > 0 && (
-        <div className="flex flex-col items-center justify-center gap-4 px-6 py-4 bg-white rounded-xl border border-gray-100">
-          <div className="text-sm text-gray-600">
+        <div className={`flex flex-col items-center justify-center gap-4 px-6 py-4 rounded-xl border transition-colors duration-300 ${
+          isDark
+            ? "bg-slate-800 border-slate-700"
+            : "bg-white border-gray-100"
+        }`}>
+          <div className={`text-sm transition-colors duration-300 ${
+            isDark ? "text-gray-400" : "text-gray-600"
+          }`}>
             Showing <span className="font-semibold">{startIndex + 1}</span> to{" "}
             <span className="font-semibold">
               {Math.min(endIndex, expenses.length)}
@@ -119,7 +152,11 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
             <button
               onClick={handlePreviousPage}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className={`p-2 rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isDark
+                  ? "border-slate-700 hover:bg-slate-700 text-gray-300"
+                  : "border-gray-200 hover:bg-gray-50 text-gray-700"
+              }`}
               title="Previous Page"
             >
               <ChevronLeft size={18} />
@@ -130,11 +167,15 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
                 <>
                   <button
                     onClick={() => setCurrentPage(1)}
-                    className="px-3 py-1 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors"
+                    className={`px-3 py-1 rounded-lg text-sm font-medium border transition-colors ${
+                      isDark
+                        ? "border-slate-700 hover:bg-slate-700 text-gray-300"
+                        : "border-gray-200 hover:bg-gray-50 text-gray-700"
+                    }`}
                   >
                     1
                   </button>
-                  {startPage > 2 && <span className="text-gray-400">...</span>}
+                  <span className={isDark ? "text-gray-600" : "text-gray-400"}>...</span>
                 </>
               )}
 
@@ -145,7 +186,9 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
                   className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                     currentPage === page
                       ? "bg-red-600 text-white"
-                      : "border border-gray-200 hover:bg-gray-50"
+                      : isDark
+                      ? "border border-slate-700 hover:bg-slate-700 text-gray-300"
+                      : "border border-gray-200 hover:bg-gray-50 text-gray-700"
                   }`}
                 >
                   {page}
@@ -154,10 +197,14 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
 
               {endPage < totalPages && (
                 <>
-                  {endPage < totalPages - 1 && <span className="text-gray-400">...</span>}
+                  <span className={isDark ? "text-gray-600" : "text-gray-400"}>...</span>
                   <button
                     onClick={() => setCurrentPage(totalPages)}
-                    className="px-3 py-1 rounded-lg text-sm font-medium border border-gray-200 hover:bg-gray-50 transition-colors"
+                    className={`px-3 py-1 rounded-lg text-sm font-medium border transition-colors ${
+                      isDark
+                        ? "border-slate-700 hover:bg-slate-700 text-gray-300"
+                        : "border-gray-200 hover:bg-gray-50 text-gray-700"
+                    }`}
                   >
                     {totalPages}
                   </button>
@@ -168,14 +215,18 @@ const ExpenseTable = ({ expenses, onDelete, currentPage, setCurrentPage, itemsPe
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className={`p-2 rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                isDark
+                  ? "border-slate-700 hover:bg-slate-700 text-gray-300"
+                  : "border-gray-200 hover:bg-gray-50 text-gray-700"
+              }`}
               title="Next Page"
             >
               <ChevronRight size={18} />
             </button>
           </div>
         </div>
-      )}
+      )}}
     </div>
   );
 };
