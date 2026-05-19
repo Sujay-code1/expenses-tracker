@@ -6,7 +6,7 @@ import { useTheme } from "../store/ThemeContext";
 
 import IncomeForm from "../components/IncomeForm";
 import IncomeTable from "../components/IncomeTable";
-import IncomeFilter from "../components/IncomeFilter";
+import {IncomeFilter} from "../components/IncomeFilter";
 import TotalIncomeCard from "../components/TotalIncomeCard";
 
 const Income = () => {

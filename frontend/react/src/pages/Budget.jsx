@@ -68,7 +68,7 @@ const Budget = () => {
                 : "border-gray-300 bg-white text-gray-900"
             }`}
           />
-          />
+          
           <BudgetForm month={month} />
         </div>
       </div>
