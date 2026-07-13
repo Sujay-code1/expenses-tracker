@@ -1,18 +1,20 @@
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./layout/Layout";
-import Dashboard from "./pages/Dashboard";
-import Income from "./pages/Income";
-import Expense from "./pages/Expense"
-import Budget from "./pages/Budget";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import History from "./pages/History";
-import Settings from "./pages/Settings";
-import Landing from "./pages/Landing";
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Income = lazy(() => import("./pages/Income"));
+const Expense = lazy(() => import("./pages/Expense"));
+const Budget = lazy(() => import("./pages/Budget"));
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const History = lazy(() => import("./pages/History"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Landing = lazy(() => import("./pages/Landing"));
 
 function App() {
   return (
-    <Routes>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div></div>}>
+      <Routes>
       <Route path="/" element={<Landing/>}/>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
@@ -26,7 +28,8 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         
       </Route>
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
 

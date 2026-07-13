@@ -115,9 +115,9 @@ const Expense = () => {
       {/* Card shows the calculated sum of the current table rows */}
       <ExpenseCard total={calculatedTotal} />
       
-      <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+      <div className={`p-4 rounded-lg shadow-sm border transition-colors duration-300 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
         <div className="flex flex-col gap-2">
-          <h3 className="text-sm font-semibold text-gray-700">Filter by Amount</h3>
+          <h3 className={`text-sm font-semibold ${isDark ? 'text-gray-100' : 'text-gray-700'}`}>Filter by Amount</h3>
           <ExpenseFilter filter={filter} setFilter={setFilter}/>
         </div>
       </div>

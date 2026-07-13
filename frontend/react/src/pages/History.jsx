@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
+import api from "../utils/axios.js";
 import { setIncome, setLoading as setIncomeLoading, setError as setIncomeError } from "../store/incomeSlice";
 import { setExpensesData, setLoading as setExpenseLoading, setError as setExpenseError } from "../store/expenseSlice";
 import { Search } from "lucide-react";
@@ -16,6 +16,8 @@ const History = () => {
 
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [month, setMonth] = useState(() => {
     const d = new Date();
@@ -25,12 +27,12 @@ const History = () => {
   const loadIncomes = useCallback(async () => {
     dispatch(setIncomeLoading(true));
     try {
-      const res = await axios.get(`http://localhost:5000/api/income?month=${month}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/api/income?month=${month}`);
       dispatch(setIncome(res.data));
     } catch (err) {
-      dispatch(setIncomeError(err.response?.data?.message || "Failed to load income"));
+      const msg = err.response?.data?.message || "Failed to load income";
+      dispatch(setIncomeError(msg));
+      import("react-hot-toast").then(({ toast }) => toast.error(msg));
     } finally {
       dispatch(setIncomeLoading(false));
     }
@@ -39,12 +41,12 @@ const History = () => {
   const loadExpenses = useCallback(async () => {
     dispatch(setExpenseLoading(true));
     try {
-      const res = await axios.get(`http://localhost:5000/api/expense?month=${month}`, {
-        withCredentials: true,
-      });
+      const res = await api.get(`/api/expense?month=${month}`);
       dispatch(setExpensesData(res.data));
     } catch (err) {
-      dispatch(setExpenseError(err.response?.data?.message || "Failed to load expenses"));
+      const msg = err.response?.data?.message || "Failed to load expenses";
+      dispatch(setExpenseError(msg));
+      import("react-hot-toast").then(({ toast }) => toast.error(msg));
     } finally {
       dispatch(setExpenseLoading(false));
     }
@@ -117,6 +119,17 @@ const History = () => {
             <option value="income">Income Only</option>
             <option value="expense">Expenses Only</option>
           </select>
+          {/* Page size selector for transaction table */}
+          <select
+            className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white text-gray-600"
+            value={itemsPerPage}
+            onChange={(e) => { setItemsPerPage(Number(e.target.value)); setCurrentPage(1); }}
+          >
+            <option value={10}>10 / page</option>
+            <option value={25}>25 / page</option>
+            <option value={50}>50 / page</option>
+            <option value={100}>100 / page</option>
+          </select>
         </div>
       </div>
 
@@ -128,7 +141,12 @@ const History = () => {
         </div>
       ) : (
         /* Reusable Table Component */
-        <TransactionTable data={filtered} />
+        <TransactionTable
+          data={filtered}
+          itemsPerPage={itemsPerPage}
+          controlledPage={currentPage}
+          onPageChange={(p) => setCurrentPage(p)}
+        />
       )}
     </div>
   );

@@ -4,14 +4,23 @@ import jwt from "jsonwebtoken";
  
 export const protect = (req, res, next) => {
   try {
-    
-    const token = req.cookies.token;
+    // Accept token from cookie or Authorization header (Bearer)
+    let token = req.cookies?.token || null;
+    const authHeader = req.headers?.authorization || req.headers?.Authorization;
+    if (!token && authHeader) {
+      // header may be "Bearer <token>"
+      token = authHeader.split(" ").pop();
+    }
 
     if (!token) {
       return res.status(401).json({ message: "Not authorized: No token provided" });
     }
 
-   
+    // strip possible surrounding quotes
+    if (typeof token === "string" && token.startsWith('"') && token.endsWith('"')) {
+      token = token.slice(1, -1);
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     

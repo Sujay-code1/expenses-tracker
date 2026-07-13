@@ -13,6 +13,7 @@ const Budget = () => {
   const dispatch = useDispatch();
   const { isDark } = useTheme();
   const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   // Provide a default empty array [] to prevent .reduce errors
   const { budgets = [], totalLimit, totalSpent, pagination, isLoading, error } = useSelector((state) => state.budget);
 
@@ -24,14 +25,14 @@ const Budget = () => {
   const fetchReport = useCallback(async (page = 1) => {
     dispatch(setLoading(true));
     try {
-      const { data } = await api.get(`/api/budget/report?page=${page}&limit=10&month=${month}`);
+      const { data } = await api.get(`/api/budget/report?page=${page}&limit=${pageSize}&month=${month}`);
       // DATA is now { budgets: [...], totalLimit: X, totalSpent: Y, pagination: {...} }
       // Pass the WHOLE object to Redux
       dispatch(setBudgets(data));
     } catch (err) {
       dispatch(setError("Error fetching budget data"));
     }
-  }, [dispatch, month]);
+  }, [dispatch, month, pageSize]);
 
   useEffect(() => {
     fetchReport(currentPage);
@@ -39,6 +40,11 @@ const Budget = () => {
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
+  };
+
+  const handlePageSizeChange = (size) => {
+    setPageSize(size);
+    setCurrentPage(1);
   };
 
   const handleMonthChange = (newMonth) => {
@@ -70,6 +76,18 @@ const Budget = () => {
           />
           
           <BudgetForm month={month} />
+          <select
+            className={`rounded-lg px-3 py-2 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none border transition-colors duration-300 ${
+              isDark ? "bg-slate-800 border-slate-700 text-white" : "border-gray-300 bg-white text-gray-900"
+            }`}
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+          >
+            <option value={10}>10 / page</option>
+            <option value={25}>25 / page</option>
+            <option value={50}>50 / page</option>
+            <option value={100}>100 / page</option>
+          </select>
         </div>
       </div>
 

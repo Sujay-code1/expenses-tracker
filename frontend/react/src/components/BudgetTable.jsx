@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Edit, Trash2, ChevronLeft, ChevronRight } from "lucide-react";
 import BudgetForm from "./BudgetForm";
+import api from "../utils/axios.js";
+import { toast } from "react-hot-toast";
+import { useTheme } from "../store/ThemeContext";
 
 const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, month }) => {
   const [editingBudget, setEditingBudget] = useState(null);
@@ -20,6 +23,8 @@ const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, m
     setEditingBudget(budget);
   };
 
+  const { isDark } = useTheme();
+
   const handleEditClose = () => {
     setEditingBudget(null);
   };
@@ -27,38 +32,26 @@ const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, m
   const handleReset = async (category) => {
     if (window.confirm(`Are you sure you want to reset the budget for ${category}?`)) {
       try {
-        const response = await fetch("http://localhost:5000/api/budget/reset", {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ category, month }),
-        });
-
-        if (response.ok) {
-          // Trigger refresh instead of reloading the page
-          if (onRefresh) {
-            onRefresh();
-          } else {
-            window.location.reload();
-          }
+        const response = await api.delete("/api/budget/reset", { data: { category, month } });
+        if (response.status === 200) {
+          if (onRefresh) onRefresh(); else window.location.reload();
+          toast.success("Budget reset successfully");
         } else {
-          alert("Failed to reset budget");
+          toast.error("Failed to reset budget");
         }
       } catch (error) {
         console.error("Error resetting budget:", error);
-        alert("Error resetting budget");
+        toast.error("Error resetting budget");
       }
     }
   };
 
   return (
     <>
-    <div className="w-full overflow-hidden rounded-xl border border-gray-100">
-      <table className="w-full text-left bg-white border-collapse">
-        <thead className="bg-gray-50 border-b border-gray-100">
-          <tr className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+    <div className={`w-full overflow-hidden rounded-xl border ${isDark ? 'border-slate-700 bg-slate-800' : 'border-gray-100 bg-white'}`}>
+      <table className="w-full text-left border-collapse">
+        <thead className={`${isDark ? 'bg-slate-700 border-b border-slate-700' : 'bg-gray-50 border-b border-gray-100'}`}>
+          <tr className={`${isDark ? 'text-[10px] font-black uppercase tracking-widest text-gray-300' : 'text-[10px] font-black uppercase tracking-widest text-gray-400'}`}>
               <th className="px-6 py-4">Category</th>
               <th className="px-6 py-4 text-center">Monthly Limit</th>
               <th className="px-6 py-4 text-center">Actual Spent</th>
@@ -66,16 +59,16 @@ const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, m
               <th className="px-6 py-4 text-center">Actions</th>
             </tr>
           </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className={`divide-y ${isDark ? 'divide-slate-700' : 'divide-gray-50'}`}>
           {budgets.map((b, index) => {
             const usage = b.limit > 0 ? (b.spent / b.limit) * 100 : 0;
             return (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 font-bold text-gray-800">{b.category}</td>
-                <td className="px-6 py-4 text-center text-gray-600 font-medium">₹{b.limit}</td>
-                <td className="px-6 py-4 text-center text-gray-600 font-medium">₹{b.spent}</td>
+              <tr key={index} className={`transition-colors ${isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-50'}`}>
+                <td className={`px-6 py-4 font-bold ${isDark ? 'text-gray-100' : 'text-gray-800'}`}>{b.category}</td>
+                <td className={`px-6 py-4 text-center font-medium ${isDark ? 'text-gray-200' : 'text-gray-600'}`}>₹{b.limit}</td>
+                <td className={`px-6 py-4 text-center font-medium ${isDark ? 'text-gray-200' : 'text-gray-600'}`}>₹{b.spent}</td>
                   <td className="px-6 py-4 text-right">
-                    <span className={`text-[11px] font-black px-3 py-1 rounded-full ${usage > 100 ? 'bg-red-50 text-red-500' : 'bg-blue-50 text-blue-600'}`}>
+                    <span className={`text-[11px] font-black px-3 py-1 rounded-full ${usage > 100 ? (isDark ? 'bg-red-800 text-red-300' : 'bg-red-50 text-red-500') : (isDark ? 'bg-slate-700 text-blue-300' : 'bg-blue-50 text-blue-600')}`}>
                       {Math.round(usage)}%
                     </span>
                   </td>
@@ -83,14 +76,14 @@ const BudgetTable = ({ budgets = [], pagination = {}, onPageChange, onRefresh, m
                     <div className="flex justify-center gap-2">
                       <button
                         onClick={() => handleEdit(b)}
-                        className="p-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        className={`p-1 rounded transition-colors ${isDark ? 'text-blue-300 hover:bg-slate-700' : 'text-blue-600 hover:bg-blue-50'}`}
                         title="Edit budget"
                       >
                         <Edit size={16} />
                       </button>
                       <button
                         onClick={() => handleReset(b.category)}
-                        className="p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className={`p-1 rounded transition-colors ${isDark ? 'text-red-300 hover:bg-slate-700' : 'text-red-600 hover:bg-red-50'}`}
                         title="Reset budget"
                       >
                         <Trash2 size={16} />

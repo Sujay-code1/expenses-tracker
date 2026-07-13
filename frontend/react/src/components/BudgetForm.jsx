@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/axios.js";
 import { useDispatch } from "react-redux";
 import { setBudgets, setError } from "../store/budgetSlice";
 import { X, Plus, Target, Edit } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 const CATEGORIES = ["Food", "Transport", "Rent", "Utilities", "Shopping", "Entertainment", "Other"];
 
@@ -33,26 +34,10 @@ const BudgetForm = ({ editBudget = null, onClose = null, onRefresh = null, month
       let response;
       if (editBudget) {
         // Update existing budget
-        response = await axios.put(
-          "http://localhost:5000/api/budget/update",
-          {
-            category: category,
-            limit: Number(amount),
-            month: month
-          },
-          { withCredentials: true }
-        );
+        response = await api.put("/api/budget/update", { category: category, limit: Number(amount), month: month });
       } else {
         // Create new budget
-        response = await axios.post(
-          "http://localhost:5000/api/budget/set",
-          {
-            category: category,
-            limit: Number(amount),
-            month: month
-          },
-          { withCredentials: true }
-        );
+        response = await api.post("/api/budget/set", { category: category, limit: Number(amount), month: month });
       }
 
       // Update Redux store
@@ -62,11 +47,13 @@ const BudgetForm = ({ editBudget = null, onClose = null, onRefresh = null, month
       setAmount("");
       setIsOpen(false);
       if (onClose) onClose();
-      alert(editBudget ? "Budget updated successfully!" : "Budget created successfully!");
+      toast.success(editBudget ? "Budget updated successfully!" : "Budget created successfully!");
 
     } catch (err) {
       console.error("Save Error:", err.response?.data);
-      dispatch(setError(err.response?.data?.message || `Failed to ${editBudget ? 'update' : 'create'} budget`));
+      const msg = err.response?.data?.message || `Failed to ${editBudget ? 'update' : 'create'} budget`;
+      dispatch(setError(msg));
+      toast.error(msg);
     }
   };
 

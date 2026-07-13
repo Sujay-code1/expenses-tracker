@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import { useTheme } from "../store/ThemeContext";
+import { Toaster } from "react-hot-toast";
 
 const Layout = () => {
   const [open, setOpen] = useState(false);
@@ -39,6 +40,7 @@ const Layout = () => {
         }`}>
           <div className="w-11/12 md:w-4/5 mx-auto py-6 sm:py-8">
             <Outlet />
+            <Toaster position="top-right" />
           </div>
         </main>
       </div>

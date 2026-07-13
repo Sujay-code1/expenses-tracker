@@ -61,11 +61,7 @@ const Header = ({ onMenuClick }) => {
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
-        <span className={`font-medium transition-colors duration-300 ${
-          isDark ? "text-gray-100" : "text-black"
-        }`}>
-          {user?.fullName?.split(" ")[0] || "User"}
-        </span>
+        {/* Removed showing user's first name from header */}
 
         <div className={`hidden sm:block w-px h-5 ${
           isDark ? "bg-gray-700" : "bg-white/10"

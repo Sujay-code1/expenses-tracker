@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { addExpenseToState } from "../store/expenseSlice";
 import { Plus, X } from "lucide-react";
 import { useTheme } from "../store/ThemeContext"; 
+import { toast } from "react-hot-toast";
 
 const ExpenseForm = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,8 @@ const ExpenseForm = () => {
       setFormData({ amount: "", category: "Food", description: "", date: new Date().toISOString().split("T")[0] });
       setIsOpen(false); 
     } catch (err) {
-      alert(err.response?.data?.message || "Failed to add expense");
+      const msg = err.response?.data?.message || "Failed to add expense";
+      toast.error(msg);
     }
   };
 
