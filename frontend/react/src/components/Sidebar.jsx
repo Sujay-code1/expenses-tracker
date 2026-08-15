@@ -30,7 +30,7 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
       className={`h-screen shadow-lg transition-all duration-300 flex flex-col flex-shrink-0 ${
         isDark
           ? "bg-gray-800 border-r border-gray-700"
-          : "bg-blue-700 border-r border-blue-800"
+          : "bg-white border-r border-gray-200"
       } ${
         isOpen ? "w-64" : "w-20"
       }`}
@@ -60,10 +60,10 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
               pathname === item.path 
                 ? isDark
                   ? "bg-purple-600 text-white shadow-md"
-                  : "bg-indigo-600 text-white shadow-md"
+                  : "bg-indigo-100 text-indigo-700 shadow-md"
                 : isDark
                 ? "text-gray-200 hover:bg-gray-700"
-                : "text-white hover:bg-blue-600"
+                : "text-gray-700 hover:bg-gray-100"
             }`}
           >
             <span className="text-xl flex-shrink-0">{item.icon}</span>
@@ -74,7 +74,7 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
 
       {/* Logout */}
       <div className={`p-4 border-t transition-colors duration-300 ${
-        isDark ? "border-gray-700" : "border-blue-800"
+        isDark ? "border-gray-700" : "border-gray-200"
       }`}>
         <button
           onClick={()=>{
@@ -84,7 +84,7 @@ function Sidebar({ isOpen, toggleSidebar, onLogout }) {
           className={`flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition-all w-full whitespace-nowrap ${
             isDark
               ? "text-red-400 hover:bg-red-600/20"
-              : "text-white hover:bg-red-600/20"
+              : "text-red-600 hover:bg-red-50"
           }`}
         >
           <span className="text-xl flex-shrink-0">

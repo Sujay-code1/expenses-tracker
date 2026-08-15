@@ -5,18 +5,43 @@ const api = axios.create({
   withCredentials: true,
 });
 
-// Reads token from cookie and sends it as Authorization header
+const normalizeToken = (value) => {
+  if (!value || typeof value !== "string") return "";
+
+  const trimmed = value.trim().replace(/^"|"$/g, "");
+  const cleaned = trimmed.replace(/^Bearer\s+/i, "");
+
+  return cleaned.includes(".") && cleaned.split(".").length === 3 ? cleaned : "";
+};
+
 api.interceptors.request.use((config) => {
-  const token = document.cookie
+  const cookieToken = document.cookie
     .split("; ")
-    .find(row => row.startsWith("token="))
-    ?.split("=")[1]
-console.log("Token being sent:", token)
+    .find((row) => row.startsWith("token="))
+    ?.split("=")[1];
+
+  const localToken = localStorage.getItem("token");
+  const token = normalizeToken(cookieToken || localToken);
+
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers.Authorization;
+    localStorage.removeItem("token");
   }
-  return config
-})
+
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error?.response?.status === 401) {
+      localStorage.removeItem("token");
+    }
+    return Promise.reject(error);
+  }
+);
 
 export default api;
 

@@ -23,7 +23,12 @@ const Signup = () => {
     dispatch(setLoading(true));
 
     try {
-      await api.post("/api/auth/register", formData)
+      const res = await api.post("/api/auth/register", formData);
+
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
       navigate("/login");
     } catch (err) {
       dispatch(setError(err.response?.data?.message || "Signup failed"));

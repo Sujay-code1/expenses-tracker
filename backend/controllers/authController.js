@@ -28,15 +28,19 @@ export const register = async (req, res) => {
       expiresIn: "7d"
     });
 
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
     res.status(201)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: false, // true in production
-        sameSite: "None",
-      })
+      .cookie("token", token, cookieOptions)
       .json({
         message: "User created successfully",
         success: true,
+        token,
         user: { id: user._id, fullName, email }
       });
 
@@ -74,17 +78,20 @@ export const Login = async (req, res) => {
       email: user.email
     };
 
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    };
+
     return res
       .status(200)
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "None",
-        maxAge: 7 * 24 * 60 * 60 * 1000
-      })
+      .cookie("token", token, cookieOptions)
       .json({
         message: `Welcome back ${user.fullName}`,
         success: true,
+        token,
         user: safeUser
       });
 

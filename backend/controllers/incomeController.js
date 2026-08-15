@@ -36,6 +36,32 @@ export const getIncomes = async (req, res) => {
 };
 
 
+export const updateIncome = async (req, res) => {
+  try {
+    const income = await Income.findById(req.params.id);
+
+    if (!income) {
+      return res.status(404).json({ message: "Income record not found" });
+    }
+
+    if (income.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: "Not authorized to update this income record" });
+    }
+
+    const { source, amount, frequency, date, description } = req.body;
+    if (source) income.source = source;
+    if (amount !== undefined && Number(amount) > 0) income.amount = Number(amount);
+    if (frequency) income.frequency = frequency;
+    if (date) income.date = new Date(date);
+    if (description !== undefined) income.description = description;
+
+    await income.save();
+    res.status(200).json(income);
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
 export const deleteIncome = async (req, res) => {
   try {
     const income = await Income.findById(req.params.id);

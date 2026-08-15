@@ -22,11 +22,18 @@ const Login = () => {
     dispatch(setLoading(true));
 
     try {
-       const res =await api.post("/api/auth/login", formData)
-    
+      const res = await api.post("/api/auth/login", formData);
+
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      } else {
+        localStorage.removeItem("token");
+      }
+
       dispatch(setUser(res.data.user));
       navigate("/dashboard");
     } catch (err) {
+      localStorage.removeItem("token");
       dispatch(setError(err.response?.data?.message || "Login failed"));
       console.error("Login Error:", err);
     } finally {
